@@ -59,11 +59,11 @@ module.exports = defineConfig({
 - Copy and paste the following code
 ```
 Cypress.Commands.add('registrationWith', (username, email, password) => {
-    if (username !== undefined) cy.get('input[name="username"]').clear().type(username)
-    if (email !== undefined) cy.get('input[name="email"]').clear().type(email)
-    if (password !== undefined) cy.get('input[name="password"]').clear().type(password)
+    if (username !== undefined) cy.get('[data-cy="username"]').clear().type(username)
+    if (email !== undefined) cy.get('[data-cy="email"]').clear().type(email)
+    if (password !== undefined) cy.get('[data-cy="password"]').clear().type(password)
     
-    cy.get('button[type="submit"]').click()
+    cy.get('[data-cy="register"]').click()
 })
 ```
 
