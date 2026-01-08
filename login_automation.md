@@ -7,17 +7,17 @@
 const { defineConfig } = require('cypress')
 
 module.exports = defineConfig({
-  e2e: {
-    baseUrl: 'YOUR_WEBSITE_HERE',
-    viewportWidth: 1280,
-    viewportHeight: 800,
-    video: true,
-    screenshotOnRunFailure: true,
-    defaultCommandTimeout: 8000,
-    setupNodeEvents(on, config) {
-      // node events here
+    e2e: {
+        baseUrl: 'https://portal-selgdx.selangor.gov.my',
+        viewportWidth: 1280,
+        viewportHeight: 800,
+        video: true,
+        screenshotOnRunFailure: true,
+        defaultCommandTimeout: 8000,
+        setupNodeEvents(on, config) {
+          // node events here
+      },
     },
-  },
 })
 ```
 
@@ -28,12 +28,24 @@ module.exports = defineConfig({
 {
     "welcome": "Welcome to Cypress",
     "valid": {
-        "email": "admin@mail.com",
-        "password": "admin123"
+        "email": "admin@cloud-connect.asia",
+        "password": "Password123"
     },
     "invalid": {
-        "email": "invadmin@mail.com",
-        "password": "invadmin123"
+        "email": "admin#cloud-connect.asia",
+        "password": "pass" 
+    },
+    "empty": {
+        "email": "",
+        "password": ""
+    },
+    "sqlInjection": {
+        "email": "' OR '1'='1",
+        "password": "' OR '1'='1"
+    },
+    "xss": {
+        "email": "<script>alert(1)</script>",
+        "password": "Password123"
     }
 }
 ```
@@ -43,8 +55,8 @@ module.exports = defineConfig({
 - Copy and paste the following code
 ```
 Cypress.Commands.add('loginWith', (email, password) => { 
-    cy.get('[data-cy="email"]').type(email)
-    cy.get('[data-cy="password"]').type(password)
+    if (email !== undefined) cy.get('[data-cy="email"]').clear().type(email)
+    if (password !== undefined) cy.get('[data-cy="password"]').clear().type(password)
     cy.get('[data-cy="login"]').click()
 })
 
@@ -62,25 +74,45 @@ Cypress.Commands.add('logout', () => {
 import loginData from '../../fixtures/loginData.json'
 
 describe('TS01 - Manage Login', () => {
+
     beforeEach(() => {
         cy.visit('/login')
     })
 
-    context('Valid data', () => {
+    context('Positive Scenarios', () => {
         it('TC01 - Login with valid data', () => {
             cy.loginWith(loginData.valid.email, loginData.valid.password)
-            cy.url().should('include', '/')
+            cy.url().should('include', '/dashboard')
             cy.contains(loginData.welcome).should('be.visible')
             cy.logout()
         })
     })
 
-    context('Invalid data', () => {
+    context('Negative Scenarios', () => {
         it('TC02 - Login with invalid data', () => {
             cy.loginWith(loginData.invalid.email, loginData.invalid.password)
             cy.contains('Email and password is invalid').should('be.visible')
         })
+    
+        it('TC03 - Login with empty data', () => {
+            cy.loginWith(loginData.empty.email, loginData.empty.password)
+            cy.contains('Email is required').should('be.visible')
+            cy.contains('Password is required').should('be.visible')
+        })
+    
+        it('TC04 - Login with XSS in email', () => {
+            cy.loginWith(loginData.xss.email, loginData.xss.password)
+            cy.contains('Invalid email or password').should('be.visible')
+        })
+    
+        it('TC05 - Login with SQL Injection', () => {
+            cy.loginWith(loginData.sqlInjection.email, loginData.sqlInjection.password)
+    
+            // App should NOT crash or login successfully
+            cy.contains('Invalid email or password').should('be.visible')
+            cy.url().should('include', '/login')
+        })
     })
 })
-
 ```
+
