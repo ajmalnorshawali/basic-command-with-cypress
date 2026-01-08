@@ -82,10 +82,11 @@ describe('TS01 - Manage Registration', () => {
 
     context('Positive Scenarios', () => {
         it('TC01 - Register with valid data', () => {
+            const user = regData.valid
             cy.registrationWith(
-                regData.valid.username,
-                regData.valid.email,
-                regData.valid.password
+                user.username,
+                user.email,
+                user.password
             )
 
             cy.contains('Registration successful').should('be.visible')
@@ -94,20 +95,22 @@ describe('TS01 - Manage Registration', () => {
 
     context('Negative Scenarios', () => {
         it('TC02 - Register with invalid data', () => {
+            const user = regData.invalid
             cy.registrationWith(
-                regData.invalid.username,
-                regData.invalid.email,
-                regData.invalid.password
+                user.username,
+                user.email,
+                user.password
             )
 
             cy.contains('Invalid email or password').should('be.visible')
         })
 
         it('TC03 - Register with empty data', () => {
+            const user = regData.empty
             cy.registrationWith(
-                regData.empty.username,
-                regData.empty.email,
-                regData.empty.password
+                user.username,
+                user.email,
+                user.password
             )
 
             cy.contains('Username is required').should('be.visible')
@@ -116,10 +119,11 @@ describe('TS01 - Manage Registration', () => {
         })
 
         it('TC04 - Register with XSS payload', () => {
+            const user = regData.xss
             cy.registrationWith(
-                regData.xss.username,
-                regData.xss.email,
-                regData.xss.password
+                user.username,
+                user.email,
+                user.password
             )
 
             cy.contains('Invalid input').should('be.visible')
@@ -127,10 +131,11 @@ describe('TS01 - Manage Registration', () => {
         })
 
         it('TC05 - Register with SQL Injection payload', () => {
+            const user = sqlInjection.xss
             cy.registrationWith(
-                regData.sqlInjection.username,
-                regData.sqlInjection.email,
-                regData.sqlInjection.password
+                user.username,
+                user.email,
+                user.password
             )
 
             cy.contains('Invalid input').should('be.visible')
