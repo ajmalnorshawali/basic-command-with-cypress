@@ -8,7 +8,7 @@ const { defineConfig } = require('cypress')
 
 module.exports = defineConfig({
     e2e: {
-        baseUrl: 'https://portal-selgdx.selangor.gov.my',
+        baseUrl: 'YOUR_URL_HERE',
         viewportWidth: 1280,
         viewportHeight: 800,
         video: true,
@@ -115,4 +115,5 @@ describe('TS01 - Manage Login', () => {
     })
 })
 ```
+
 
