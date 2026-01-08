@@ -1,5 +1,6 @@
 # FOLDER STRUCTURE
 
+```
 cypress/
  ├── e2e/
  │   ├── auth/
@@ -16,3 +17,4 @@ cypress/
  │
  └── api/
      └── auth.api.cy.js
+```
