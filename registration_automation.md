@@ -8,7 +8,7 @@ const { defineConfig } = require('cypress')
 
 module.exports = defineConfig({
     e2e: {
-        baseUrl: 'https://portal-selgdx.selangor.gov.my',
+        baseUrl: 'YOUR_URL_HERE',
         viewportWidth: 1280,
         viewportHeight: 800,
         video: true,
@@ -34,12 +34,22 @@ module.exports = defineConfig({
     "invalid": {
         "username": "Admin!",
         "email": "admin#cloud-connect.asia",
-        "password": "pass" 
+        "password": "pass"
     },
     "empty": {
         "username": "",
         "email": "",
         "password": ""
+    },
+    "xss": {
+        "username": "<script>alert(1)</script>",
+        "email": "<script>alert(1)</script>@test.com",
+        "password": "Password123"
+    },
+    "sqlInjection": {
+        "username": "' OR '1'='1",
+        "email": "' OR '1'='1",
+        "password": "' OR '1'='1"
     }
 }
 ```
@@ -62,36 +72,69 @@ Cypress.Commands.add('registrationWith', (username, email, password) => {
 - Copy and paste the following code
 ```
 /// <reference types="cypress" />
-import regData from '../fixtures/regData.json'
+import regData from '../../fixtures/regData.json'
 
 describe('TS01 - Manage Registration', () => {
+
     beforeEach(() => {
-        cy.visit('/register') // Make sure this is the registration page
+        cy.visit('/register')
     })
 
     context('Positive Scenarios', () => {
         it('TC01 - Register with valid data', () => {
-            cy.registrationWith(regData.valid.username, regData.valid.email, regData.valid.password)
-            cy.contains('Registration successful').should('be.visible') // Adjust according to your app
+            cy.registrationWith(
+                regData.valid.username,
+                regData.valid.email,
+                regData.valid.password
+            )
+
+            cy.contains('Registration successful').should('be.visible')
         })
     })
 
     context('Negative Scenarios', () => {
-        it('TC01 - Register with invalid data', () => {
-            cy.registrationWith(regData.invalid.username, regData.invalid.email, regData.invalid.password)
+        it('TC02 - Register with invalid data', () => {
+            cy.registrationWith(
+                regData.invalid.username,
+                regData.invalid.email,
+                regData.invalid.password
+            )
+
             cy.contains('Invalid email or password').should('be.visible')
         })
 
-        it('TC02 - Register with empty data', () => {
-            cy.registrationWith(regData.empty.username, regData.empty.email, regData.empty.password)
+        it('TC03 - Register with empty data', () => {
+            cy.registrationWith(
+                regData.empty.username,
+                regData.empty.email,
+                regData.empty.password
+            )
+
             cy.contains('Username is required').should('be.visible')
             cy.contains('Email is required').should('be.visible')
             cy.contains('Password is required').should('be.visible')
         })
 
-        it('TC03 - Register with XSS in email', () => {
-            cy.registrationWith('<script>alert(1)</script>', 'Password123', 'Password123')
-            cy.contains('Invalid email or password').should('be.visible')
+        it('TC04 - Register with XSS payload', () => {
+            cy.registrationWith(
+                regData.xss.username,
+                regData.xss.email,
+                regData.xss.password
+            )
+
+            cy.contains('Invalid input').should('be.visible')
+            cy.url().should('include', '/register')
+        })
+
+        it('TC05 - Register with SQL Injection payload', () => {
+            cy.registrationWith(
+                regData.sqlInjection.username,
+                regData.sqlInjection.email,
+                regData.sqlInjection.password
+            )
+
+            cy.contains('Invalid input').should('be.visible')
+            cy.url().should('include', '/register')
         })
     })
 })
