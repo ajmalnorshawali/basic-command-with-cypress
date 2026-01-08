@@ -1,6 +1,5 @@
-# CYPRESS BEST PRACTICES
+# FOLDER STRUCTURE
 
-### Folder Structure
 cypress/
  ├── e2e/
  │   ├── auth/
@@ -17,4 +16,3 @@ cypress/
  │
  └── api/
      └── auth.api.cy.js
-
