@@ -81,7 +81,8 @@ describe('TS01 - Manage Login', () => {
 
     context('Positive Scenarios', () => {
         it('TC01 - Login with valid data', () => {
-            cy.loginWith(loginData.valid.email, loginData.valid.password)
+            const user = loginData.valid
+            cy.loginWith(user.email, user.password)
             cy.url().should('include', '/dashboard')
             cy.contains(loginData.welcome).should('be.visible')
             cy.logout()
@@ -90,23 +91,27 @@ describe('TS01 - Manage Login', () => {
 
     context('Negative Scenarios', () => {
         it('TC02 - Login with invalid data', () => {
-            cy.loginWith(loginData.invalid.email, loginData.invalid.password)
+            const user = loginData.invalid
+            cy.loginWith(user.email, user.password)
             cy.contains('Email and password is invalid').should('be.visible')
         })
     
         it('TC03 - Login with empty data', () => {
-            cy.loginWith(loginData.empty.email, loginData.empty.password)
+            const user = loginData.empty
+            cy.loginWith(user.email, user.password)
             cy.contains('Email is required').should('be.visible')
             cy.contains('Password is required').should('be.visible')
         })
     
         it('TC04 - Login with XSS in email', () => {
-            cy.loginWith(loginData.xss.email, loginData.xss.password)
+            const user = loginData.xss
+            cy.loginWith(user.email, user.password)
             cy.contains('Invalid email or password').should('be.visible')
         })
     
         it('TC05 - Login with SQL Injection', () => {
-            cy.loginWith(loginData.sqlInjection.email, loginData.sqlInjection.password)
+            const user = loginData.sqlInjection
+            cy.loginWith(user.email, user.password)
     
             // App should NOT crash or login successfully
             cy.contains('Invalid email or password').should('be.visible')
@@ -115,5 +120,6 @@ describe('TS01 - Manage Login', () => {
     })
 })
 ```
+
 
 
