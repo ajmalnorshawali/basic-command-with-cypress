@@ -1,7 +1,7 @@
 # LOGIN AUTOMATION
 
 ### STEP 1
-- Open**cypress.config.js**
+- Open **cypress.config.js**
 - Copy and paste the following code
 ```
 const { defineConfig } = require('cypress')
@@ -82,4 +82,5 @@ describe('TS01 - Manage Login', () => {
         })
     })
 })
+
 ```
